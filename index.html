@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THREOX SECURITY - Sales Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #ffffff; color: #1e293b; line-height: 1.5; overflow-x: hidden; min-height: 100vh; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(241,245,249,0.5); }
+        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+
+        :root {
+            --white: #ffffff; --offwhite: #f9fafb; --gray-50: #f8fafc; --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0; --gray-300: #cbd5e1; --gray-400: #94a3b8; --gray-500: #64748b;
+            --gray-600: #475569; --gray-700: #334155; --gray-800: #1e293b; --gray-900: #0f172a;
+            --green: #10b981; --green-dark: #059669; --green-light: #34d399;
+            --blue: #3b82f6; --blue-dark: #2563eb;
+            --grad: linear-gradient(135deg, #10b981, #3b82f6);
+            --border-light: 1px solid rgba(226,232,240,0.5);
+            --network-color: #ef4444; --web-color: #f59e0b; --app-color: #10b981; --cloud-color: #3b82f6; --source-color: #8b5cf6;
+        }
+        .hidden { display: none !important; }
+
+        .video-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; background: transparent; }
+        .video-background video { position: absolute; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; transform: translate(-50%, -50%); object-fit: cover; opacity: 0.4; }
+        .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: -1; }
+
+        .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; z-index: 1; }
+        .login-box { background: rgba(255,255,255,0.92); backdrop-filter: blur(16px); padding: 48px 40px; border-radius: 24px; border: 1px solid rgba(226,232,240,0.5); max-width: 420px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.06); }
+        .login-box .logo { text-align: center; margin-bottom: 8px; }
+        .login-box .logo img { max-height: 80px; width: auto; object-fit: contain; }
+        .login-box .logo .logo-text { display: block; margin-top: 8px; max-height: 40px; width: auto; object-fit: contain; }
+        .login-box .sub { text-align: center; color: var(--gray-500); font-size: 0.9rem; margin-bottom: 32px; }
+
+        .mfa-step { display: none; }
+        .mfa-step.active { display: block; }
+        .mfa-step .mfa-header { text-align: center; margin-bottom: 24px; }
+        .mfa-step .mfa-header i { font-size: 3rem; color: var(--green); margin-bottom: 8px; }
+        .mfa-step .mfa-header h3 { font-size: 1.2rem; font-weight: 700; color: var(--gray-800); }
+        .mfa-step .mfa-header p { font-size: 0.85rem; color: var(--gray-500); }
+        .mfa-step .mfa-header .phone-number { font-weight: 600; color: var(--gray-700); }
+        
+        .mfa-step .otp-input-group { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+        .mfa-step .otp-input-group input { width: 50px; height: 60px; text-align: center; font-size: 1.5rem; font-weight: 700; font-family: 'Inter', sans-serif; border: 2px solid var(--gray-200); border-radius: 12px; background: var(--gray-50); transition: all 0.2s; outline: none; }
+        .mfa-step .otp-input-group input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); background: white; }
+        .mfa-step .otp-input-group input.error { border-color: #ef4444; }
+        .mfa-step .otp-input-group input.filled { border-color: var(--green); background: white; }
+        
+        .mfa-step .resend-section { text-align: center; margin: 16px 0; }
+        .mfa-step .resend-section button { background: none; border: none; color: var(--blue); font-weight: 600; cursor: pointer; font-size: 0.85rem; font-family: 'Inter', sans-serif; }
+        .mfa-step .resend-section button:hover { color: var(--green); }
+        .mfa-step .resend-section .timer { color: var(--gray-500); font-size: 0.8rem; }
+        .mfa-step .mfa-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.15); padding: 12px 16px; border-radius: 12px; color: #ef4444; font-size: 0.9rem; margin-bottom: 16px; display: none; align-items: center; gap: 10px; }
+        .mfa-step .mfa-error.show { display: flex; }
+
+        .login-box .form-group { margin-bottom: 20px; }
+        .login-box .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--gray-700); }
+        .login-box .form-group input { width: 100%; padding: 14px 18px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 12px; color: var(--gray-800); font-family: 'Inter', sans-serif; font-size: 0.95rem; transition: all 0.2s; outline: none; }
+        .login-box .form-group input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+        .login-box .form-group.error input { border-color: #ef4444; }
+        .login-box .form-group .error-msg { color: #ef4444; font-size: 0.8rem; margin-top: 4px; display: none; }
+        .login-box .form-group.error .error-msg { display: block; }
+
+        .login-btn { width: 100%; padding: 16px; background: var(--grad); color: white; font-weight: 700; font-size: 1rem; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16,185,129,0.3); }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .login-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.15); padding: 12px 16px; border-radius: 12px; color: #ef4444; font-size: 0.9rem; margin-bottom: 16px; display: none; align-items: center; gap: 10px; }
+        .login-error.show { display: flex; }
+
+        .back-to-login { display: inline-flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 0.85rem; cursor: pointer; background: none; border: none; font-family: 'Inter', sans-serif; margin-top: 12px; }
+        .back-to-login:hover { color: var(--green); }
+
+        .dashboard { display: flex; min-height: 100vh; background: var(--black); }
+        .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 2rem; transition: all 0.3s ease; background: transparent; }
+        .navbar.scrolled { background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226,232,240,0.5); }
+        .nav-container { max-width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 70px; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo img { height: 35px; width: auto; object-fit: contain; }
+        .logo .logo-text-nav { height: 28px; width: auto; object-fit: contain; }
+        .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+        .status-badge { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); padding: 0.3rem 1rem; border-radius: 40px; font-size: 0.75rem; font-weight: 600; color: var(--green-dark); display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.2); } }
+        .user-menu { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); border-radius: 40px; border: 1px solid rgba(226,232,240,0.5); cursor: pointer; transition: all 0.2s; }
+        .user-menu:hover { border-color: var(--green); background: white; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem; }
+        .user-menu span { font-size: 0.85rem; font-weight: 500; color: var(--gray-700); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .logout-btn-nav { background: none; border: none; color: var(--gray-400); cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s; font-size: 1rem; }
+        .logout-btn-nav:hover { color: #ef4444; background: rgba(239,68,68,0.08); }
+
+        .app-container { display: flex; padding-top: 70px; min-height: 100vh; }
+        .sidebar { width: 280px; background: transparent; border-right: 1px solid rgba(226,232,240,0.5); height: calc(100vh - 70px); position: sticky; top: 70px; overflow-y: auto; flex-shrink: 0; padding: 0 1rem 1.5rem; }
+        .sidebar-header { padding: 1.5rem 0.5rem 1rem; border-bottom: 1px solid rgba(226,232,240,0.5); margin-bottom: 1.5rem; text-align: center; }
+        .sidebar-header .sidebar-logo { max-height: 60px; width: auto; object-fit: contain; margin-bottom: 8px; }
+        .sidebar-header .greeting { font-size: 0.75rem; color: var(--gray-500); font-weight: 500; }
+        .sidebar-header .user-name { font-size: 1.1rem; font-weight: 700; color: var(--gray-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .findings-header { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); padding: 0 0.5rem 0.75rem; display: flex; align-items: center; gap: 6px; }
+        .sidebar-category-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .category-item { background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); border-radius: 12px; padding: 1rem; border: 1px solid rgba(226,232,240,0.5); transition: all 0.2s ease; cursor: pointer; position: relative; }
+        .category-item:hover { background: white; transform: translateX(4px); border-color: var(--green); }
+        .category-item.active { border-color: var(--green); background: white; }
+        .category-item.network { border-left: 4px solid var(--network-color); }
+        .category-item.web { border-left: 4px solid var(--web-color); }
+        .category-item.application { border-left: 4px solid var(--app-color); }
+        .category-item.cloud { border-left: 4px solid var(--cloud-color); }
+        .category-item.source { border-left: 4px solid var(--source-color); }
+        .category-item.all { border-left: 4px solid var(--green); }
+        .category-title { font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+        .category-count { background: rgba(16,185,129,0.1); padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; color: var(--green); }
+        .category-desc { font-size: 0.7rem; color: var(--gray-500); margin-top: 4px; }
+        .sidebar-footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(226,232,240,0.5); color: var(--gray-500); font-size: 0.75rem; text-align: center; }
+
+        .main-content { flex: 1; overflow-y: auto; height: calc(100vh - 70px); padding: 1.5rem 2rem 2rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.5); border-radius: 16px; padding: 1.25rem 1.5rem; transition: all 0.2s; min-height: 100px; display: flex; flex-direction: column; justify-content: center; }
+        .stat-card:hover { transform: translateY(-2px); border-color: var(--green); }
+        .stat-card .stat-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+        .stat-card .stat-value { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: var(--gray-800); margin: 2px 0; line-height: 1.3; }
+        .stat-card .stat-value.green { color: var(--green); }
+        .stat-card .stat-value.blue { color: var(--blue); }
+        .stat-card .stat-value.orange { color: var(--web-color); }
+        .stat-card .stat-value.small { font-size: 0.85rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; display: block; }
+        .stat-card .stat-sub { font-size: 0.7rem; color: var(--gray-400); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+
+        .toolbar { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; align-items: center; justify-content: space-between; }
+        .toolbar-left { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; flex: 1; }
+        .search-wrap { position: relative; flex: 1; max-width: 360px; background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.5); border-radius: 40px; padding: 0 1.2rem; display: flex; align-items: center; transition: all 0.2s; }
+        .search-wrap:focus-within { border-color: var(--green); }
+        .search-wrap i { color: var(--gray-400); }
+        .search-wrap input { background: transparent; border: none; padding: 0.7rem 0.8rem; font-size: 0.9rem; width: 100%; outline: none; font-family: 'Inter', sans-serif; color: var(--gray-800); }
+        .filter-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .chip { background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.5); border-radius: 40px; padding: 0.4rem 1.2rem; font-size: 0.8rem; font-weight: 500; color: var(--gray-700); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; }
+        .chip:hover { background: white; border-color: var(--green); color: var(--green); }
+        .chip.active { background: var(--grad); border-color: transparent; color: white; }
+        .chip.active i { color: white; }
+        .chip i { color: var(--gray-400); }
+        .toolbar-right { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .btn-icon { padding: 0.6rem 1.2rem; background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); border: 1px solid rgba(226,232,240,0.5); border-radius: 40px; color: var(--gray-700); cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-icon:hover { background: white; border-color: var(--green); }
+        .btn-icon.green { background: var(--grad); border-color: transparent; color: white; }
+        .btn-icon.green:hover { box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+
+        .table-wrap { background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(226,232,240,0.5); overflow: hidden; }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        table thead { background: rgba(241,245,249,0.5); }
+        table thead th { padding: 1rem 1.25rem; text-align: left; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); border-bottom: 1px solid rgba(226,232,240,0.5); white-space: nowrap; }
+        table tbody td { padding: 0.9rem 1.25rem; border-bottom: 1px solid rgba(226,232,240,0.15); vertical-align: middle; color: var(--gray-700); }
+        table tbody tr:hover { background: rgba(16,185,129,0.03); }
+        .badge-service { display: inline-block; padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+        .badge-service.web { background: rgba(245,158,11,0.12); color: #d97706; }
+        .badge-service.application { background: rgba(16,185,129,0.12); color: var(--green-dark); }
+        .badge-service.network { background: rgba(239,68,68,0.12); color: #dc2626; }
+        .badge-service.cloud { background: rgba(59,130,246,0.12); color: var(--blue-dark); }
+        .badge-service.source { background: rgba(139,92,246,0.12); color: #7c3aed; }
+        .table-message { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .actions { display: flex; gap: 6px; }
+        .actions button { padding: 4px 8px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.8rem; background: var(--gray-100); color: var(--gray-600); }
+        .actions button.danger:hover { background: rgba(239,68,68,0.12); color: #dc2626; }
+
+        .empty-state { text-align: center; padding: 4rem 2rem; }
+        .empty-state i { font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem; }
+        .empty-state h3 { font-size: 1.2rem; color: var(--gray-700); margin-bottom: 0.5rem; }
+        .empty-state p { color: var(--gray-500); font-size: 0.9rem; }
+
+        .spinner-wrap { display: flex; justify-content: center; align-items: center; padding: 3rem 1rem; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(16,185,129,0.1); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .pagination-wrap { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-top: 1px solid rgba(226,232,240,0.5); flex-wrap: wrap; gap: 0.75rem; }
+        .pagination-wrap .info { color: var(--gray-500); font-size: 0.85rem; }
+        .pagination-wrap .pages { display: flex; gap: 4px; }
+        .pagination-wrap .pages button { padding: 0.3rem 0.8rem; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--gray-500); cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; font-size: 0.85rem; }
+        .pagination-wrap .pages button:hover { background: var(--gray-100); color: var(--gray-700); }
+        .pagination-wrap .pages button.active { background: var(--grad); color: white; border-color: transparent; }
+        .pagination-wrap .pages button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .dialog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.5); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 24px; }
+        .dialog-overlay.show { display: flex; }
+        .dialog-box { background: white; padding: 2.5rem 2rem; border-radius: 24px; max-width: 420px; width: 100%; border: 1px solid rgba(226,232,240,0.5); box-shadow: 0 40px 80px rgba(0,0,0,0.08); text-align: center; }
+        .dialog-box i { font-size: 3rem; color: #ef4444; margin-bottom: 1rem; }
+        .dialog-box h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--gray-800); }
+        .dialog-box p { color: var(--gray-500); font-size: 0.95rem; margin-bottom: 1.5rem; }
+        .dialog-box .actions { display: flex; gap: 0.75rem; justify-content: center; }
+        .dialog-box .actions button { padding: 0.6rem 1.8rem; border: none; border-radius: 12px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 600; transition: all 0.2s; font-size: 0.9rem; }
+        .dialog-box .actions .cancel { background: var(--gray-100); color: var(--gray-700); }
+        .dialog-box .actions .confirm { background: #ef4444; color: white; }
+
+        .admin-toast { position: fixed; bottom: 30px; right: 30px; padding: 0.8rem 1.5rem; background: white; border-radius: 16px; border: 1px solid rgba(226,232,240,0.5); box-shadow: 0 20px 60px rgba(0,0,0,0.08); color: var(--gray-800); font-family: 'Inter', sans-serif; font-weight: 500; z-index: 99999; transform: translateY(120px); opacity: 0; transition: 0.4s cubic-bezier(0.4,0,0.2,1); display: flex; align-items: center; gap: 12px; font-size: 0.9rem; max-width: 90%; }
+        .admin-toast.show { transform: translateY(0); opacity: 1; }
+        .admin-toast.error { border-left: 4px solid #ef4444; }
+        .admin-toast.error i { color: #ef4444; }
+        .admin-toast i { color: var(--green); font-size: 1.2rem; }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { padding: 1rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .stat-card { padding: 1rem; min-height: 80px; }
+            .login-box { padding: 2rem 1.5rem; }
+            .mfa-step .otp-input-group input { width: 40px; height: 50px; font-size: 1.2rem; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+            .stat-card { padding: 0.75rem; min-height: 70px; }
+            .mfa-step .otp-input-group input { width: 32px; height: 40px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- VIDEO BACKGROUND -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="background.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="video-overlay"></div>
+
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-page">
+        <div class="login-box">
+            <div class="logo">
+                <img src="solo_logo.jpeg" alt="THREOX SECURITY" />
+                <img src="company_text.jpeg" alt="THREOX SECURITY" class="logo-text" />
+            </div>
+            <p class="sub">Sales Portal — Secure Login</p>
+            
+            <div class="login-error" id="loginError">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="loginErrorMsg">Invalid credentials</span>
+            </div>
+
+            <!-- STEP 1: Email & Password -->
+            <div id="loginStep" class="mfa-step active">
+                <form id="loginForm" novalidate>
+                    <div class="form-group" id="emailGroup">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="admin@threox.com" required />
+                        <div class="error-msg">Please enter a valid email.</div>
+                    </div>
+                    <div class="form-group" id="passGroup">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required />
+                        <div class="error-msg">Please enter your password.</div>
+                    </div>
+                    <button type="submit" class="login-btn" id="loginBtn">
+                        <i class="fas fa-arrow-right-to-bracket"></i> Login
+                    </button>
+                </form>
+            </div>
+
+            <!-- STEP 2: SMS MFA Verification -->
+            <div id="mfaStep" class="mfa-step">
+                <div class="mfa-header">
+                    <i class="fas fa-sms"></i>
+                    <h3>Two-Factor Authentication</h3>
+                    <p>We've sent a 6-digit code to your registered phone number</p>
+                    <p class="phone-number" id="phoneDisplay">+1 (XXX) XXX-XXXX</p>
+                </div>
+                
+                <div class="mfa-error" id="mfaError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="mfaErrorMsg">Invalid verification code</span>
+                </div>
+
+                <div class="otp-input-group" id="otpGroup">
+                    <input type="text" maxlength="1" class="otp-input" data-index="0" />
+                    <input type="text" maxlength="1" class="otp-input" data-index="1" />
+                    <input type="text" maxlength="1" class="otp-input" data-index="2" />
+                    <input type="text" maxlength="1" class="otp-input" data-index="3" />
+                    <input type="text" maxlength="1" class="otp-input" data-index="4" />
+                    <input type="text" maxlength="1" class="otp-input" data-index="5" />
+                </div>
+
+                <div class="resend-section">
+                    <button id="resendBtn"><i class="fas fa-sync-alt"></i> Resend Code</button>
+                    <span class="timer" id="timerDisplay">(30s)</span>
+                </div>
+
+                <button class="login-btn" id="verifyBtn">
+                    <i class="fas fa-check-circle"></i> Verify
+                </button>
+
+                <button class="back-to-login" id="backToLoginBtn">
+                    <i class="fas fa-arrow-left"></i> Back to Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard hidden">
+        <nav class="navbar" id="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">
+                    <img src="solo_logo.jpeg" alt="THREOX" />
+                    <img src="company_text.jpeg" alt="THREOX SECURITY" class="logo-text-nav" />
+                </a>
+                <div class="nav-right">
+                    <div class="status-badge"><span class="status-dot"></span><span>Live</span></div>
+                    <div class="user-menu">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <span id="userEmailDisplay">admin@threox.com</span>
+                    </div>
+                    <button class="logout-btn-nav" id="logoutBtnNav"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="app-container">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <img src="solo_logo.jpeg" alt="THREOX" class="sidebar-logo" />
+                    <div class="greeting">Welcome back,</div>
+                    <div class="user-name" id="sidebarUserName">Admin</div>
+                </div>
+                <div class="findings-header"><i class="fas fa-layer-group"></i> Categories</div>
+                <div class="sidebar-category-list">
+                    <div class="category-item all active" data-filter="all">
+                        <div class="category-title">All Inquiries <span class="category-count" id="totalBadge">0</span></div>
+                        <div class="category-desc">All submissions</div>
+                    </div>
+                    <div class="category-item web" data-filter="web">
+                        <div class="category-title">Web Security <span class="category-count" id="webCount">0</span></div>
+                        <div class="category-desc">Web app & API testing</div>
+                    </div>
+                    <div class="category-item application" data-filter="application">
+                        <div class="category-title">Mobile Security <span class="category-count" id="appCount">0</span></div>
+                        <div class="category-desc">Android & iOS testing</div>
+                    </div>
+                    <div class="category-item network" data-filter="network">
+                        <div class="category-title">Network Security <span class="category-count" id="networkCount">0</span></div>
+                        <div class="category-desc">Network & infrastructure</div>
+                    </div>
+                    <div class="category-item cloud" data-filter="cloud">
+                        <div class="category-title">Cloud Security <span class="category-count" id="cloudCount">0</span></div>
+                        <div class="category-desc">AWS, Azure, GCP</div>
+                    </div>
+                    <div class="category-item source" data-filter="source">
+                        <div class="category-title">Source Code Review <span class="category-count" id="sourceCount">0</span></div>
+                        <div class="category-desc">Code security analysis</div>
+                    </div>
+                </div>
+                <div class="sidebar-footer">v2.0 — Secure Dashboard</div>
+            </aside>
+
+            <main class="main-content">
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-label"><i class="fas fa-inbox" style="color:var(--green);"></i> Total Inquiries</div>
+                        <div class="stat-value green" id="totalCount">0</div>
+                        <div class="stat-sub">All time submissions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label"><i class="fas fa-calendar-day" style="color:var(--blue);"></i> Today's</div>
+                        <div class="stat-value blue" id="todayCount">0</div>
+                        <div class="stat-sub">Last 24 hours</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label"><i class="fas fa-clock" style="color:var(--web-color);"></i> Last Submission</div>
+                        <div class="stat-value orange" id="lastSubmission" style="font-size:0.9rem;">—</div>
+                        <div class="stat-sub">Most recent inquiry</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label"><i class="fas fa-user-shield" style="color:var(--green);"></i> Admin Session</div>
+                        <div class="stat-value small" id="loggedUser">—</div>
+                        <div class="stat-sub"><i class="fas fa-circle" style="color:var(--green);"></i> Active</div>
+                    </div>
+                </div>
+
+                <div class="filter-chips" id="filterChips">
+                    <button class="chip active" data-filter="all"><i class="fas fa-list"></i> All</button>
+                    <button class="chip" data-filter="web"><i class="fas fa-globe"></i> Web</button>
+                    <button class="chip" data-filter="application"><i class="fas fa-mobile-screen"></i> Mobile</button>
+                    <button class="chip" data-filter="network"><i class="fas fa-network-wired"></i> Network</button>
+                    <button class="chip" data-filter="cloud"><i class="fas fa-cloud"></i> Cloud</button>
+                    <button class="chip" data-filter="source"><i class="fas fa-code"></i> Source</button>
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-left">
+                        <div class="search-wrap">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search..." />
+                        </div>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="btn-icon green" id="refreshBtn"><i class="fas fa-sync"></i> Refresh</button>
+                        <button class="btn-icon" id="exportBtn"><i class="fas fa-file-csv"></i> Export</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr><th>#</th><th>Name</th><th>Email</th><th>Company</th><th>Phone</th><th>Service</th><th>Requirement</th><th>Date</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="spinner-wrap hidden" id="loadingSpinner"><div class="spinner"></div></div>
+                    <div class="empty-state hidden" id="emptyState">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No inquiries yet</h3>
+                        <p>When clients submit the contact form, inquiries will appear here.</p>
+                    </div>
+                    <div class="pagination-wrap" id="paginationWrap">
+                        <div class="info" id="paginationInfo">Showing 0 of 0</div>
+                        <div class="pages" id="paginationPages"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- DIALOG -->
+    <div class="dialog-overlay" id="dialogOverlay">
+        <div class="dialog-box">
+            <i class="fas fa-trash-can"></i>
+            <h3>Delete Inquiry?</h3>
+            <p id="dialogMsg">Are you sure you want to delete this inquiry?</p>
+            <div class="actions">
+                <button class="cancel" id="dialogCancel">Cancel</button>
+                <button class="confirm" id="dialogConfirm">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invisible reCAPTCHA container required by Firebase Phone/MFA verification -->
+    <div id="recaptcha-container"></div>
+
+    <!-- FIREBASE SDK -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        // ================================================================
+        // FIREBASE CONFIG
+        // ================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgC4bUGN2XajhVvHHyYf-qxzgvy-nmyY8",
+            authDomain: "admin-6df50.firebaseapp.com",
+            databaseURL: "https://admin-6df50-default-rtdb.firebaseio.com",
+            projectId: "admin-6df50",
+            storageBucket: "admin-6df50.firebasestorage.app",
+            messagingSenderId: "273989159024",
+            appId: "1:273989159024:web:d584cc68ef633cab5b8cb5"
+        };
+
+        import { initializeApp } from 'firebase/app';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut,
+            setPersistence, 
+            browserLocalPersistence,
+            PhoneMultiFactorGenerator,
+            PhoneAuthProvider,
+            getMultiFactorResolver,
+            RecaptchaVerifier
+        } from 'firebase/auth';
+        import { getDatabase, ref, onValue, remove } from 'firebase/database';
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        setPersistence(auth, browserLocalPersistence);
+
+        // ================================================================
+        // DOM REFS
+        // ================================================================
+        const loginPage = document.getElementById('loginPage');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const loginErrorMsg = document.getElementById('loginErrorMsg');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const emailGroup = document.getElementById('emailGroup');
+        const passGroup = document.getElementById('passGroup');
+
+        const loginStep = document.getElementById('loginStep');
+        const mfaStep = document.getElementById('mfaStep');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const mfaError = document.getElementById('mfaError');
+        const mfaErrorMsg = document.getElementById('mfaErrorMsg');
+        const resendBtn = document.getElementById('resendBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const backToLoginBtn = document.getElementById('backToLoginBtn');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const phoneDisplay = document.getElementById('phoneDisplay');
+
+        const tableBody = document.getElementById('tableBody');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const emptyState = document.getElementById('emptyState');
+        const paginationWrap = document.getElementById('paginationWrap');
+        const paginationInfo = document.getElementById('paginationInfo');
+        const paginationPages = document.getElementById('paginationPages');
+        const totalCount = document.getElementById('totalCount');
+        const todayCount = document.getElementById('todayCount');
+        const lastSubmission = document.getElementById('lastSubmission');
+        const loggedUser = document.getElementById('loggedUser');
+        const totalBadge = document.getElementById('totalBadge');
+        const searchInput = document.getElementById('searchInput');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const logoutBtnNav = document.getElementById('logoutBtnNav');
+        const dialogOverlay = document.getElementById('dialogOverlay');
+        const dialogCancel = document.getElementById('dialogCancel');
+        const dialogConfirm = document.getElementById('dialogConfirm');
+        const dialogMsg = document.getElementById('dialogMsg');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        const sidebarUserName = document.getElementById('sidebarUserName');
+        const userAvatar = document.getElementById('userAvatar');
+
+        const webCount = document.getElementById('webCount');
+        const appCount = document.getElementById('appCount');
+        const networkCount = document.getElementById('networkCount');
+        const cloudCount = document.getElementById('cloudCount');
+        const sourceCount = document.getElementById('sourceCount');
+
+        // ================================================================
+        // STATE
+        // ================================================================
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const pageSize = 8;
+        let deleteTarget = null;
+        let isAuthenticated = false;
+        let dbListener = null;
+        let currentFilter = 'all';
+        let loginAttempts = 0;
+        const MAX_LOGIN_ATTEMPTS = 5;
+        let mfaTimer = null;
+        let mfaCountdown = 30;
+        let mfaResolver = null;
+        let mfaSession = null;
+        let mfaVerified = false;
+        let recaptchaVerifier = null;
+
+        // ================================================================
+        // RECAPTCHA VERIFIER (required by Firebase for phone/MFA verification)
+        // ================================================================
+        function getRecaptchaVerifier() {
+            if (!recaptchaVerifier) {
+                recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    size: 'invisible'
+                });
+            }
+            return recaptchaVerifier;
+        }
+
+        function resetRecaptchaVerifier() {
+            if (recaptchaVerifier) {
+                try { recaptchaVerifier.clear(); } catch (e) {}
+                recaptchaVerifier = null;
+            }
+        }
+
+        // ================================================================
+        // OTP INPUT HANDLING
+        // ================================================================
+        function getOtpValue() {
+            let otp = '';
+            otpInputs.forEach(input => otp += input.value);
+            return otp;
+        }
+
+        function clearOtpInputs() {
+            otpInputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('filled', 'error');
+            });
+            if (otpInputs[0]) otpInputs[0].focus();
+        }
+
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', function(e) {
+                if (this.value.length === 1) {
+                    this.classList.add('filled');
+                    if (index < otpInputs.length - 1) otpInputs[index + 1].focus();
+                }
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    otpInputs[index - 1].focus();
+                    otpInputs[index - 1].classList.remove('filled');
+                }
+            });
+            input.addEventListener('keypress', (e) => {
+                if (!/^\d$/.test(e.key)) e.preventDefault();
+            });
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const digits = paste.replace(/\D/g, '').slice(0, 6);
+                digits.split('').forEach((digit, i) => {
+                    if (i < otpInputs.length) {
+                        otpInputs[i].value = digit;
+                        otpInputs[i].classList.add('filled');
+                    }
+                });
+                if (digits.length < otpInputs.length) {
+                    otpInputs[digits.length].focus();
+                } else {
+                    otpInputs[otpInputs.length - 1].focus();
+                }
+            });
+        });
+
+        // ================================================================
+        // TOAST
+        // ================================================================
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.admin-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'admin-toast show' + (isError ? ' error' : '');
+            toast.innerHTML = `
+                <i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // ================================================================
+        // MFA TIMER
+        // ================================================================
+        function startMfaTimer() {
+            mfaCountdown = 30;
+            timerDisplay.textContent = `(${mfaCountdown}s)`;
+            if (mfaTimer) clearInterval(mfaTimer);
+            
+            mfaTimer = setInterval(() => {
+                mfaCountdown--;
+                timerDisplay.textContent = `(${mfaCountdown}s)`;
+                if (mfaCountdown <= 0) {
+                    clearInterval(mfaTimer);
+                    timerDisplay.textContent = '(expired)';
+                    resendBtn.style.opacity = '1';
+                    resendBtn.style.cursor = 'pointer';
+                }
+            }, 1000);
+            
+            resendBtn.style.opacity = '0.5';
+            resendBtn.style.cursor = 'not-allowed';
+        }
+
+        // ================================================================
+        // LOGIN
+        // ================================================================
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.classList.remove('show');
+
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value.trim();
+
+            if (!email || !password) {
+                loginErrorMsg.textContent = 'Please fill in all fields.';
+                loginError.classList.add('show');
+                return;
+            }
+
+            if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+                loginErrorMsg.textContent = 'Too many attempts. Try again later.';
+                loginError.classList.add('show');
+                loginBtn.disabled = true;
+                setTimeout(() => {
+                    loginBtn.disabled = false;
+                    loginAttempts = 0;
+                }, 30000);
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+            try {
+                // NOTE: When an account has MFA enrolled, Firebase does NOT return a
+                // signed-in user here. Instead it throws 'auth/multi-factor-auth-required',
+                // which is handled in the catch block below via getMultiFactorResolver().
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                console.log('✅ User authenticated (no MFA required):', user.email);
+
+                mfaVerified = true;
+                loginAttempts = 0;
+
+                loginPage.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+
+                const displayName = user.email.split('@')[0] || 'Admin';
+                userEmailDisplay.textContent = user.email;
+                sidebarUserName.textContent = displayName;
+                userAvatar.textContent = displayName.charAt(0).toUpperCase();
+                loggedUser.textContent = user.email;
+
+                loadData();
+                showToast('👋 Welcome back!');
+
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+
+            } catch (err) {
+                console.error('❌ Login error:', err);
+
+                if (err.code === 'auth/multi-factor-auth-required') {
+                    // ================================================
+                    // ACCOUNT HAS SMS MFA ENABLED — START VERIFICATION
+                    // ================================================
+                    console.log('🔐 MFA required - Starting SMS verification');
+                    try {
+                        mfaResolver = getMultiFactorResolver(auth, err);
+
+                        const phoneHint = mfaResolver.hints.find(
+                            h => h.factorId === PhoneMultiFactorGenerator.FACTOR_ID
+                        );
+
+                        if (!phoneHint) {
+                            loginErrorMsg.textContent = 'No supported MFA method enrolled for this account.';
+                            loginError.classList.add('show');
+                            loginBtn.disabled = false;
+                            loginBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+                            return;
+                        }
+
+                        phoneDisplay.textContent = phoneHint.phoneNumber || phoneHint.displayName || 'your registered phone';
+
+                        const phoneInfoOptions = {
+                            multiFactorHint: phoneHint,
+                            session: mfaResolver.session
+                        };
+
+                        const phoneAuthProvider = new PhoneAuthProvider(auth);
+                        const verificationId = await phoneAuthProvider.verifyPhoneNumber(
+                            phoneInfoOptions,
+                            getRecaptchaVerifier()
+                        );
+
+                        mfaSession = { verificationId };
+                        mfaVerified = false;
+
+                        console.log('✅ SMS sent to:', phoneHint.phoneNumber);
+                        showToast('📱 SMS sent! Check your phone.');
+
+                        loginStep.classList.remove('active');
+                        mfaStep.classList.add('active');
+                        clearOtpInputs();
+                        startMfaTimer();
+
+                    } catch (mfaErr) {
+                        console.error('❌ SMS send error:', mfaErr);
+                        loginErrorMsg.textContent = 'Failed to send verification code. Please try again.';
+                        loginError.classList.add('show');
+                        resetRecaptchaVerifier();
+                    }
+
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+                    return;
+                }
+
+                loginAttempts++;
+
+                let msg = 'Invalid credentials.';
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                    msg = `Incorrect password. ${MAX_LOGIN_ATTEMPTS - loginAttempts} attempts left.`;
+                } else if (err.code === 'auth/user-not-found') {
+                    msg = 'No account found with this email.';
+                } else if (err.code === 'auth/too-many-requests') {
+                    msg = 'Too many attempts. Please try again later.';
+                }
+
+                loginErrorMsg.textContent = msg;
+                loginError.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+            }
+        });
+
+        // ================================================================
+        // VERIFY SMS OTP
+        // ================================================================
+        verifyBtn.addEventListener('click', async () => {
+            mfaError.classList.remove('show');
+            
+            const otp = getOtpValue();
+            if (otp.length !== 6) {
+                mfaErrorMsg.textContent = 'Please enter all 6 digits.';
+                mfaError.classList.add('show');
+                otpInputs.forEach(input => input.classList.add('error'));
+                return;
+            }
+
+            if (!mfaSession || !mfaResolver) {
+                mfaErrorMsg.textContent = 'Session expired. Please try again.';
+                mfaError.classList.add('show');
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+            try {
+                // Build the phone credential from the SMS code, then finalize
+                // sign-in through the multi-factor resolver.
+                const credential = PhoneAuthProvider.credential(
+                    mfaSession.verificationId,
+                    otp
+                );
+                const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
+
+                const userCredential = await mfaResolver.resolveSignIn(multiFactorAssertion);
+                const user = userCredential.user;
+
+                console.log('✅ MFA verification successful!');
+                mfaVerified = true;
+                showToast('✅ MFA verification successful!');
+                clearOtpInputs();
+
+                loginPage.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+
+                const displayName = user.email.split('@')[0] || 'Admin';
+                userEmailDisplay.textContent = user.email;
+                sidebarUserName.textContent = displayName;
+                userAvatar.textContent = displayName.charAt(0).toUpperCase();
+                loggedUser.textContent = user.email;
+
+                loadData();
+
+                mfaStep.classList.remove('active');
+                loginStep.classList.add('active');
+                if (mfaTimer) clearInterval(mfaTimer);
+                mfaSession = null;
+                mfaResolver = null;
+                resetRecaptchaVerifier();
+
+            } catch (err) {
+                console.error('❌ MFA verification error:', err);
+                mfaErrorMsg.textContent = 'Invalid code. Please try again.';
+                mfaError.classList.add('show');
+                otpInputs.forEach(input => input.classList.add('error'));
+                clearOtpInputs();
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
+            }
+        });
+
+        // ================================================================
+        // RESEND SMS
+        // ================================================================
+        resendBtn.addEventListener('click', async () => {
+            if (mfaCountdown > 0) return;
+
+            if (!mfaResolver) {
+                showToast('❌ Please login again', true);
+                backToLoginBtn.click();
+                return;
+            }
+
+            try {
+                const phoneHint = mfaResolver.hints.find(
+                    h => h.factorId === PhoneMultiFactorGenerator.FACTOR_ID
+                );
+                const phoneInfoOptions = {
+                    multiFactorHint: phoneHint,
+                    session: mfaResolver.session
+                };
+                const phoneAuthProvider = new PhoneAuthProvider(auth);
+                const verificationId = await phoneAuthProvider.verifyPhoneNumber(
+                    phoneInfoOptions,
+                    getRecaptchaVerifier()
+                );
+
+                mfaSession = { verificationId };
+                clearOtpInputs();
+                startMfaTimer();
+                showToast('📱 New SMS sent!');
+            } catch (err) {
+                console.error('❌ Resend error:', err);
+                showToast('❌ Failed to resend code', true);
+            }
+        });
+
+        // ================================================================
+        // BACK TO LOGIN
+        // ================================================================
+        backToLoginBtn.addEventListener('click', () => {
+            mfaStep.classList.remove('active');
+            loginStep.classList.add('active');
+            clearOtpInputs();
+            mfaError.classList.remove('show');
+            if (mfaTimer) clearInterval(mfaTimer);
+            mfaSession = null;
+            mfaResolver = null;
+            mfaVerified = false;
+            resetRecaptchaVerifier();
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+        });
+
+        // ================================================================
+        // AUTH STATE
+        // ================================================================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // By the time Firebase reports a signed-in user here, any
+                // required MFA challenge has already been resolved (either
+                // there was no MFA, or resolveSignIn() succeeded above).
+                console.log('👤 Auth state changed - User:', user.email);
+                isAuthenticated = true;
+
+                loginPage.classList.add('hidden');
+                dashboard.classList.remove('hidden');
+
+                const displayName = user.email.split('@')[0] || 'Admin';
+                userEmailDisplay.textContent = user.email;
+                sidebarUserName.textContent = displayName;
+                userAvatar.textContent = displayName.charAt(0).toUpperCase();
+                loggedUser.textContent = user.email;
+
+                if (allData.length === 0) loadData();
+            } else {
+                console.log('👤 User logged out');
+                isAuthenticated = false;
+                mfaVerified = false;
+                mfaSession = null;
+                mfaResolver = null;
+                loginPage.classList.remove('hidden');
+                dashboard.classList.add('hidden');
+                loginStep.classList.add('active');
+                mfaStep.classList.remove('active');
+                
+                if (dbListener) {
+                    dbListener();
+                    dbListener = null;
+                }
+                allData = [];
+                filteredData = [];
+                renderTable();
+            }
+        });
+
+        // ================================================================
+        // LOGOUT
+        // ================================================================
+        logoutBtnNav.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                mfaVerified = false;
+                mfaSession = null;
+                mfaResolver = null;
+                resetRecaptchaVerifier();
+                showToast('🔒 Logged out');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+                loginEmail.value = '';
+                loginPassword.value = '';
+                loginAttempts = 0;
+                clearOtpInputs();
+                loginStep.classList.add('active');
+                mfaStep.classList.remove('active');
+            } catch (err) {
+                showToast('❌ Logout failed', true);
+            }
+        });
+
+        // ================================================================
+        // DATA LOADING
+        // ================================================================
+        function loadData() {
+            if (dbListener) {
+                dbListener();
+                dbListener = null;
+            }
+
+            const inquiriesRef = ref(db, 'contactForm');
+            loadingSpinner.classList.remove('hidden');
+
+            dbListener = onValue(inquiriesRef, (snapshot) => {
+                loadingSpinner.classList.add('hidden');
+                const data = snapshot.val();
+
+                if (data) {
+                    const entries = Object.entries(data).map(([id, value]) => {
+                        let timestamp = new Date();
+                        if (value.timestamp) {
+                            if (typeof value.timestamp === 'object' && value.timestamp.seconds) {
+                                timestamp = new Date(value.timestamp.seconds * 1000);
+                            } else if (typeof value.timestamp === 'number') {
+                                timestamp = new Date(value.timestamp);
+                            }
+                        }
+                        return { id, ...value, _timestamp: timestamp };
+                    });
+                    entries.sort((a, b) => b._timestamp - a._timestamp);
+                    allData = entries;
+                } else {
+                    allData = [];
+                }
+
+                applyFiltersAndRender();
+                updateStats();
+                updateCategoryCounts();
+            }, (err) => {
+                console.error('❌ Database error:', err);
+                loadingSpinner.classList.add('hidden');
+                showToast('❌ Error loading data', true);
+            });
+        }
+
+        // ================================================================
+        // STATS & FILTERS
+        // ================================================================
+        function updateCategoryCounts() {
+            const counts = { web: 0, application: 0, network: 0, cloud: 0, source: 0 };
+            allData.forEach(item => {
+                const service = (item.service || '').toLowerCase();
+                if (service.includes('web') || service.includes('api')) counts.web++;
+                else if (service.includes('android') || service.includes('ios') || service.includes('mobile')) counts.application++;
+                else if (service.includes('network')) counts.network++;
+                else if (service.includes('cloud')) counts.cloud++;
+                else if (service.includes('source') || service.includes('code')) counts.source++;
+            });
+            webCount.textContent = counts.web;
+            appCount.textContent = counts.application;
+            networkCount.textContent = counts.network;
+            cloudCount.textContent = counts.cloud;
+            sourceCount.textContent = counts.source;
+        }
+
+        function updateStats() {
+            totalCount.textContent = allData.length;
+            totalBadge.textContent = allData.length;
+            
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const todayItems = allData.filter(item => item._timestamp >= todayStart);
+            todayCount.textContent = todayItems.length;
+
+            if (allData.length > 0) {
+                const latest = allData[0];
+                lastSubmission.textContent = latest._timestamp ? 
+                    latest._timestamp.toLocaleDateString() + ' ' + latest._timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) :
+                    '—';
+            } else {
+                lastSubmission.textContent = '—';
+            }
+        }
+
+        function applyFiltersAndRender() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const filter = currentFilter;
+
+            let data = [...allData];
+
+            if (filter !== 'all') {
+                data = data.filter(item => {
+                    const service = (item.service || '').toLowerCase();
+                    switch (filter) {
+                        case 'web': return service.includes('web') || service.includes('api');
+                        case 'application': return service.includes('android') || service.includes('ios') || service.includes('mobile');
+                        case 'network': return service.includes('network');
+                        case 'cloud': return service.includes('cloud');
+                        case 'source': return service.includes('source') || service.includes('code');
+                        default: return true;
+                    }
+                });
+            }
+
+            if (searchTerm) {
+                data = data.filter(item =>
+                    (item.fullName || '').toLowerCase().includes(searchTerm) ||
+                    (item.email || '').toLowerCase().includes(searchTerm) ||
+                    (item.company || '').toLowerCase().includes(searchTerm) ||
+                    (item.service || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            data.sort((a, b) => b._timestamp - a._timestamp);
+            filteredData = data;
+            renderTable();
+        }
+
+        function renderTable() {
+            const total = filteredData.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const start = (currentPage - 1) * pageSize;
+            const end = Math.min(start + pageSize, total);
+            const pageItems = filteredData.slice(start, end);
+
+            paginationInfo.textContent = `Showing ${total === 0 ? 0 : start + 1}–${end} of ${total}`;
+            renderPagination(totalPages);
+
+            if (pageItems.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                paginationWrap.classList.add('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+            paginationWrap.classList.remove('hidden');
+
+            let html = '';
+            pageItems.forEach((item, idx) => {
+                const dateStr = item._timestamp ?
+                    item._timestamp.toLocaleDateString() + ' ' + item._timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) :
+                    '—';
+
+                let badgeClass = 'web';
+                const service = (item.service || '').toLowerCase();
+                if (service.includes('android') || service.includes('ios') || service.includes('mobile')) badgeClass = 'application';
+                else if (service.includes('network')) badgeClass = 'network';
+                else if (service.includes('cloud')) badgeClass = 'cloud';
+                else if (service.includes('source') || service.includes('code')) badgeClass = 'source';
+
+                html += `
+                    <tr>
+                        <td>${start + idx + 1}</td>
+                        <td><strong>${escapeHtml(item.fullName || '—')}</strong></td>
+                        <td>${escapeHtml(item.email || '—')}</td>
+                        <td>${escapeHtml(item.company || '—')}</td>
+                        <td>${escapeHtml(item.phone || '—')}</td>
+                        <td><span class="badge-service ${badgeClass}">${escapeHtml(item.service || '—')}</span></td>
+                        <td class="table-message">${escapeHtml(item.message || '—')}</td>
+                        <td style="font-size:0.8rem;color:var(--gray-500);">${dateStr}</td>
+                        <td>
+                            <div class="actions">
+                                <button class="danger" data-id="${item.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+
+            tableBody.querySelectorAll('button[data-id]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    const item = allData.find(d => d.id === id);
+                    if (item) {
+                        deleteTarget = id;
+                        dialogMsg.textContent = `Delete inquiry from "${item.fullName || 'Unknown'}"?`;
+                        dialogOverlay.classList.add('show');
+                    }
+                });
+            });
+        }
+
+        function renderPagination(totalPages) {
+            let html = '';
+            html += `<button class="page-prev" ${currentPage <= 1 ? 'disabled' : ''}>&laquo;</button>`;
+
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+
+            html += `<button class="page-next" ${currentPage >= totalPages ? 'disabled' : ''}>&raquo;</button>`;
+
+            paginationPages.innerHTML = html;
+
+            paginationPages.querySelectorAll('button[data-page]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentPage = parseInt(btn.dataset.page);
+                    renderTable();
+                });
+            });
+
+            const prevBtn = paginationPages.querySelector('.page-prev');
+            const nextBtn = paginationPages.querySelector('.page-next');
+            if (prevBtn && !prevBtn.disabled) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentPage > 1) { currentPage--; renderTable(); }
+                });
+            }
+            if (nextBtn && !nextBtn.disabled) {
+                nextBtn.addEventListener('click', () => {
+                    if (currentPage < totalPages) { currentPage++; renderTable(); }
+                });
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ================================================================
+        // EVENT LISTENERS
+        // ================================================================
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            applyFiltersAndRender();
+        });
+
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentFilter = chip.dataset.filter;
+                currentPage = 1;
+                applyFiltersAndRender();
+            });
+        });
+
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.category-item').forEach(c => c.classList.remove('active'));
+                item.classList.add('active');
+                currentFilter = item.dataset.filter;
+                document.querySelectorAll('.chip').forEach(c => {
+                    c.classList.toggle('active', c.dataset.filter === currentFilter);
+                });
+                currentPage = 1;
+                applyFiltersAndRender();
+            });
+        });
+
+        refreshBtn.addEventListener('click', () => {
+            if (isAuthenticated) {
+                showToast('🔄 Refreshing...');
+                loadData();
+            }
+        });
+
+        exportBtn.addEventListener('click', () => {
+            if (allData.length === 0) {
+                showToast('No data to export.', true);
+                return;
+            }
+
+            const headers = ['Name', 'Email', 'Company', 'Phone', 'Service', 'Requirement', 'Date'];
+            const rows = allData.map(item => [
+                `"${(item.fullName || '').replace(/"/g, '""')}"`,
+                `"${(item.email || '').replace(/"/g, '""')}"`,
+                `"${(item.company || '').replace(/"/g, '""')}"`,
+                `"${(item.phone || '').replace(/"/g, '""')}"`,
+                `"${(item.service || '').replace(/"/g, '""')}"`,
+                `"${(item.message || '').replace(/"/g, '""')}"`,
+                item._timestamp ? item._timestamp.toLocaleString() : ''
+            ]);
+
+            const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `inquiries_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showToast('📥 CSV exported');
+        });
+
+        dialogCancel.addEventListener('click', () => {
+            dialogOverlay.classList.remove('show');
+            deleteTarget = null;
+        });
+
+        dialogConfirm.addEventListener('click', async () => {
+            if (!deleteTarget) return;
+
+            try {
+                const itemRef = ref(db, `contactForm/${deleteTarget}`);
+                await remove(itemRef);
+                showToast('🗑️ Deleted successfully');
+                allData = allData.filter(item => item.id !== deleteTarget);
+                applyFiltersAndRender();
+                updateStats();
+                updateCategoryCounts();
+            } catch (err) {
+                showToast('❌ Delete failed', true);
+            }
+            dialogOverlay.classList.remove('show');
+            deleteTarget = null;
+        });
+
+        // ================================================================
+        // SESSION TIMEOUT
+        // ================================================================
+        let sessionTimeout;
+        const SESSION_DURATION = 30 * 60 * 1000;
+
+        function resetSessionTimer() {
+            if (sessionTimeout) clearTimeout(sessionTimeout);
+            if (isAuthenticated) {
+                sessionTimeout = setTimeout(() => {
+                    showToast('⏰ Session expired', true);
+                    handleLogout();
+                }, SESSION_DURATION);
+            }
+        }
+
+        document.addEventListener('click', resetSessionTimer);
+        document.addEventListener('keydown', resetSessionTimer);
+        document.addEventListener('mousemove', resetSessionTimer);
+
+        // ================================================================
+        // INIT
+        // ================================================================
+        console.log('🚀 THREOX Sales Portal with SMS MFA');
+        loadingSpinner.classList.remove('hidden');
+
+        // Any existing session (fully authenticated, MFA already satisfied
+        // if applicable) will be picked up automatically by onAuthStateChanged
+        // above once Firebase restores it from persistence.
+    </script>
+</body>
+</html>
